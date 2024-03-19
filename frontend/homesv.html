@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Học Bổng Đại Học Cần Thơ</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", "fallback for Inter", sans-serif;
+      }
+
+      /* Thiết lập font chữ và màu nền cho header */
+      header {
+        background-color: #f2fffe;
+        color: #267765;
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header h1 {
+        margin: 0;
+        padding: 0;
+      }
+
+      .auth-buttons {
+        display: flex;
+        gap: 15px;
+        margin-right: 45px;
+      }
+
+      .auth-buttons a {
+        background-color: #0f7771;
+        text-decoration: none;
+        color: white;
+        padding: 10px 15px;
+        border: 1px solid #fff;
+        border-radius: 5px;
+        font-family: "Inter", "fallback for Inter", sans-serif;
+      }
+
+      .auth-buttons a:hover {
+        background-color: #0c5855;
+        color: white;
+      }
+
+      section {
+        padding: 0 6px;
+      }
+
+      p {
+        line-height: 1.5;
+      }
+
+      p {
+        display: block;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+      }
+
+      a {
+        text-decoration: none;
+        color: #0f7771;
+      }
+
+      img {
+        overflow-clip-margin: content-box;
+        overflow: clip;
+      }
+
+      .container1-container-fluid {
+        position: relative;
+        top: 80px;
+      }
+
+      .container1 {
+        margin-top: 60px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div style="display: flex">
+        <div class="logo-ctu">
+          <img src="/ctu.png" alt="Ảnh của bạn" />
+        </div>
+        <h1 class="tc">Đăng Ký Học Bổng</h1>
+      </div>
+    </header>
+
+    <div class="container1">
+      <table class="table table-striped table-allcustomer">
+        <thead>
+          <tr>
+            <th scope="col">Tên Học Bổng</th>
+            <th scope="col">Đơn Vị</th>
+            <th scope="col">Hạn Đăng Ký</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody id="infoTableBody"></tbody>
+      </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script>
+      const infoTableBody = document.getElementById("infoTableBody");
+
+      axios
+        .get("http://localhost:2209/api/v1/trangchu1")
+        .then((response) => {
+          var thongtin = response.data.thongtin;
+          while (infoTableBody.firstChild) {
+            infoTableBody.removeChild(infoTableBody.firstChild);
+          }
+
+          thongtin.forEach((info) => {
+            var row = document.createElement("tr");
+            var formattedHanDK = moment(info.hanDK).format("DD-MM-YYYY");
+
+            var tenHBCell = document.createElement("td");
+            tenHBCell.textContent = info.tenHB;
+            row.appendChild(tenHBCell);
+
+            var donViCell = document.createElement("td");
+            donViCell.textContent = info.donVi;
+            row.appendChild(donViCell);
+
+            var hanDKCell = document.createElement("td");
+            hanDKCell.textContent = formattedHanDK;
+            row.appendChild(hanDKCell);
+
+            var detailCell = document.createElement("td");
+            var detailButton = document.createElement("button");
+            detailButton.textContent = "Chi tiết";
+
+            detailButton.addEventListener("click", function () {
+              // Lưu maHB vào localStorage
+              localStorage.setItem("selectedMaHB", info.maHB);
+              var openBtn = document.querySelector(".modal");
+              var modalContainer = document.querySelector(".modal-container");
+              var closeBtn = document.querySelector(".modal-close");
+              var infoDetail = document.querySelector(".modal-body");
+
+              openBtn.classList.add("open");
+
+              closeBtn.onclick = function () {
+                openBtn.classList.remove("open");
+              };
+
+              openBtn.onclick = function () {
+                openBtn.classList.remove("open");
+              };
+
+              modalContainer.onclick = function (event) {
+                event.stopPropagation();
+              };
+              function formatnumber(number) {
+                format_number = "";
+                let cnt = 0;
+                for (let i = number.length - 1; i >= 0; i--) {
+                  cnt += 1;
+                  if (cnt == 4) {
+                    format_number = "." + format_number;
+                    cnt = 1;
+                  }
+                  format_number = number[i] + format_number;
+                }
+                return format_number;
+              }
+
+              axios
+                .post("http://localhost:2209/api/v1/tthb", { maHB: info.maHB })
+                .then((response) => {
+                  // Xử lý dữ liệu từ response và hiển thị trong modal
+                  var info = response.data.info;
+
+                  var infoDiv = document.createElement("div");
+
+                  var formattedHanDK = moment(info.hanDK).format("DD-MM-YYYY");
+
+                  var DieuKien = info.dieuKien;
+                  DieuKien = DieuKien.replace(/\n/g, "<br>");
+                  var Cachthamgia = info.cachThamGia;
+                  Cachthamgia = Cachthamgia.replace(/\n/g, "<br>");
+                  var TGtochuc = info.tgToChuc;
+                  TGtochuc = TGtochuc.replace(/\n/g, "<br>");
+
+                  infoDiv.innerHTML = `
+
+                                    <p><strong>Tên học bổng:</strong> ${
+                                      info.tenHB
+                                    }</p>
+                                    <p><strong>Đơn vị:</strong> ${
+                                      info.donVi
+                                    }</p>
+                                    <p><strong>Điều kiện:</strong></br>${DieuKien}</p>
+                                    <p><strong>Số tiền:</strong> ${formatnumber(
+                                      info.soTien
+                                    )}</p>
+                                    <p><strong>Cách tham gia:</strong></br>${Cachthamgia}</p>
+                                    <p><strong>Hạn đăng ký:</strong> ${formattedHanDK}</p>
+                                    <p><strong>Số lượng:</strong> ${
+                                      info.soLuongDK
+                                    }</p>
+                                    <p><strong>Thời gian tổ chức:</strong> </br>${TGtochuc}</p>
+                                `;
+
+                  // Xóa thông tin cũ trong modal trước khi hiển thị thông tin mới
+                  infoDetail.innerHTML = "";
+
+                  // Hiển thị thông tin mới trong modal
+                  infoDetail.appendChild(infoDiv);
+                })
+                .catch((error) => {
+                  console.error(
+                    "Lỗi khi lấy thông tin chi tiết học bổng:",
+                    error
+                  );
+                });
+            });
+
+            detailCell.appendChild(detailButton);
+            row.appendChild(detailCell);
+
+            infoTableBody.appendChild(row);
+          });
+          // Gán sự kiện click vào nút "Ứng tuyển"
+          document
+            .getElementById("apply-button")
+            .addEventListener("click", function () {
+              // Khi nút được ấn, kích hoạt hộp thoại chọn tệp
+              document.getElementById("file-input").click();
+            });
+
+          // Xử lý sự kiện khi người dùng đã chọn tệp
+          //   document
+          //     .getElementById("file-input")
+          //     .addEventListener("change", function () {
+          //       // const filePath = this.value; // Đường dẫn đến tệp đã chọn
+          //       // const confirmation = confirm(`Bạn có muốn tải tệp này lên không?\nTệp đã chọn: ${filePath}`);
+
+          //       if (confirmation) {
+          //         // Gửi tệp lên server sử dụng Axios
+          //         const fileInput = document.getElementById("file-input");
+          //         const file = fileInput.files[0];
+          //         if (file) {
+          //           const formData = new FormData();
+          //           formData.append("file", file);
+          //           let id_sv = localStorage.getItem("id_sv");
+          //           let maHB_ = localStorage.getItem("selectedMaHB");
+          //           console.log(id_sv);
+          //           console.log(maHB_);
+          //           // Thêm id_sv và maHB vào formData
+          //           formData.append("id_sv", id_sv);
+          //           formData.append("maHB", maHB_);
+
+          //           axios
+          //             .post("http://localhost:2209/api/v1/uploadfile", formData)
+          //             .then((response) => {
+          //               for (let [key, value] of formData) {
+          //                 console.log(key, value);
+          //               }
+          //               alert("Tệp đã được tải lên thành công.");
+          //             })
+          //             .catch((error) => {
+          //               for (let [key, value] of formData) {
+          //                 console.log(key, value);
+          //               }
+          //               alert("Đã xảy ra lỗi khi tải tệp lên server.");
+          //               console.error("Lỗi:", error);
+          //             });
+          //         }
+          //       }
+          //     });
+
+          document
+            .getElementById("file-input")
+            .addEventListener("change", function () {
+              const fileInput = this;
+              const filePath = fileInput.value; // Đường dẫn đến tệp đã chọn
+
+              // Kiểm tra nếu không có tệp nào đã chọn
+              if (fileInput.files.length === 0) {
+                alert("Vui lòng chọn một tệp.");
+                return;
+              }
+
+              // Kiểm tra loại tệp
+              const file = fileInput.files[0];
+              const allowedExtensions = /(\.pdf)$/i; // Chỉ cho phép tệp PDF
+              if (!allowedExtensions.exec(filePath)) {
+                alert("Vui lòng chọn một tệp PDF.");
+                fileInput.value = ""; // Xóa lựa chọn tệp không hợp lệ
+                return;
+              }
+
+              const confirmation = confirm(
+                `Bạn có muốn tải tệp này lên không?\nTệp đã chọn: ${filePath}`
+              );
+
+              if (confirmation) {
+                // Gửi tệp lên server sử dụng Axios
+                const formData = new FormData();
+                formData.append("file", file);
+                let id_sv = localStorage.getItem("id_sv");
+                let maHB_ = localStorage.getItem("selectedMaHB");
+                console.log(id_sv);
+                console.log(maHB_);
+                // Thêm id_sv và maHB vào formData
+                formData.append("id_sv", id_sv);
+                formData.append("maHB", maHB_);
+
+                axios
+                  .post("http://localhost:2209/api/v1/uploadfile", formData)
+                  .then((response) => {
+                    for (let [key, value] of formData) {
+                      console.log(key, value);
+                    }
+                    alert("Tệp đã được tải lên thành công.");
+                  })
+                  .catch((error) => {
+                    for (let [key, value] of formData) {
+                      console.log(key, value);
+                    }
+                    alert("Đã xảy ra lỗi khi tải tệp lên server.");
+                    console.error("Lỗi:", error);
+                  });
+              }
+            });
+        })
+        .catch((error) => {
+          console.error("Lỗi khi lấy thông tin học bổng:", error);
+        });
+    </script>
+
+    <div class="modal">
+      <div class="modal-container">
+        <div class="modal-close">
+          <div class="icon-close">X</div>
+        </div>
+        <div id="header__home">
+          <header class="modal-header1">Đăng ký học bổng</header>
+        </div>
+
+        <div class="modal-body">
+          <!-- Thông tin học bổng sẽ được hiển thị ở đây -->
+        </div>
+
+        <button class="buy-stickets" id="apply-button">Ứng tuyển</button>
+        <input type="file" id="file-input" style="display: none" />
+      </div>
+    </div>
+
+    <script></script>
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

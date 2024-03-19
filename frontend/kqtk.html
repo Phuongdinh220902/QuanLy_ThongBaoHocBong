@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách học bổng</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+</head>
+
+<body>
+    <h1 class="header_"><b>DANH SÁCH HỌC BỔNG</b></h1>
+    <div id="add-button-container">
+        <button type="button" id="create-new-hb">Thêm</button>
+        <button onclick="show('tab1')" type="button" id="con-han">Còn hạn</button>
+        <button onclick="show('tab2')" type="button" id="het-han">Hết hạn</button>
+    </div>
+
+    <div id="dropdown-container">
+        <label style="margin-top: 5px; margin-right: 10px;" for="tkDropdown">Chọn Học Bổng:</label>
+        <select id="tkDropdown">
+        </select>
+        <button class="filter-button-container" type=" button" id="filter">Tìm</button>
+    </div>
+
+    <div class="table-container" id="tab1">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Tên Học Bổng</th>
+                    <th scope="col">Đơn Vị</th>
+                    <th scope="col">Hạn Đăng Ký</th>
+                    <th scope="col"> </th>
+                </tr>
+            </thead>
+            <tbody id="infoTableBody"></tbody>
+        </table>
+    </div>
+
+
+    <ul id="infoList"></ul>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+
+        button {
+            padding: 5px 10px;
+            background-color: #129cd3;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #745151;
+        }
+    </style>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const createNewHbButton = document.getElementById('create-new-hb');
+        const FilterButton = document.getElementById('filter');
+        const tkDropdown = document.getElementById('tkDropdown');
+
+        createNewHbButton.addEventListener('click', function () {
+            window.location.href = "create.html";
+        });
+
+        FilterButton.addEventListener('click', function () {
+            const selectedValue = tkDropdown.value;
+            console.log(selectedValue)
+            localStorage.setItem("TK", selectedValue);
+            window.location.href = "kqtk.html";
+        });
+
+        const postData = {
+            tenHB: localStorage.getItem("TK")
+        };
+
+        const infoTableBody = document.getElementById('infoTableBody');
+
+        function show(tabid) {
+            if (tabid == 'tab2') {
+                axios.get("http://localhost:2209/api/v1/trangchu2")
+                    .then(response => {
+                        var thongtin = response.data.thongtin;
+                        while (infoTableBody.firstChild) {
+                            infoTableBody.removeChild(infoTableBody.firstChild);
+                        }
+
+                        thongtin.forEach(info => {
+                            var row = document.createElement("tr");
+                            var formattedHanDK = moment(info.hanDK).format("DD-MM-YYYY");
+
+                            var tenHBCell = document.createElement("td");
+                            tenHBCell.textContent = info.tenHB;
+                            row.appendChild(tenHBCell);
+
+                            var donViCell = document.createElement("td");
+                            donViCell.textContent = info.donVi;
+                            row.appendChild(donViCell);
+
+
+                            var hanDKCell = document.createElement("td");
+                            hanDKCell.textContent = formattedHanDK;
+                            row.appendChild(hanDKCell);
+
+
+                            var detailCell = document.createElement("td");
+                            var detailButton = document.createElement("button");
+                            detailButton.textContent = "Chi tiết";
+                            detailButton.addEventListener("click", function () {
+                                // Lưu maHB vào localStorage
+                                localStorage.setItem("selectedMaHB", info.maHB);
+                                window.location.href = "detail.html";
+                            });
+                            detailCell.appendChild(detailButton);
+                            row.appendChild(detailCell);
+
+                            infoTableBody.appendChild(row);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Lỗi khi lấy thông tin học bổng:", error);
+                    });
+            }
+            else {
+                axios.get("http://localhost:2209/api/v1/trangchu1")
+                    .then(response => {
+                        var thongtin = response.data.thongtin;
+                        // console.log(response.data.thongtin)
+                        while (infoTableBody.firstChild) {
+                            infoTableBody.removeChild(infoTableBody.firstChild);
+                        }
+
+                        thongtin.forEach(info => {
+                            var row = document.createElement("tr");
+                            var formattedHanDK = moment(info.hanDK).format("DD-MM-YYYY");
+
+                            var tenHBCell = document.createElement("td");
+                            tenHBCell.textContent = info.tenHB;
+                            row.appendChild(tenHBCell);
+
+                            var donViCell = document.createElement("td");
+                            donViCell.textContent = info.donVi;
+                            row.appendChild(donViCell);
+
+
+                            var hanDKCell = document.createElement("td");
+                            hanDKCell.textContent = formattedHanDK;
+                            row.appendChild(hanDKCell);
+
+
+                            var detailCell = document.createElement("td");
+                            var detailButton = document.createElement("button");
+                            detailButton.textContent = "Chi tiết";
+                            detailButton.addEventListener("click", function () {
+                                // Lưu maHB vào localStorage
+                                localStorage.setItem("selectedMaHB", info.maHB);
+                                window.location.href = "detail.html";
+                            });
+                            detailCell.appendChild(detailButton);
+                            row.appendChild(detailCell);
+
+                            infoTableBody.appendChild(row);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Lỗi khi lấy thông tin học bổng:", error);
+                    });
+            }
+        }
+
+        axios.post("http://localhost:2209/api/v1/filtertenHB", postData)
+            .then(response => {
+                var thongtin = response.data.thongtin;
+
+                thongtin.forEach(info => {
+                    var row = document.createElement("tr");
+
+                    var tenHBCell = document.createElement("td");
+                    tenHBCell.textContent = info.tenHB;
+                    row.appendChild(tenHBCell);
+
+                    var donViCell = document.createElement("td");
+                    donViCell.textContent = info.donVi;
+                    row.appendChild(donViCell);
+
+                    var hanDKCell = document.createElement("td");
+                    hanDKCell.textContent = new Date(info.hanDK).toLocaleDateString();
+                    row.appendChild(hanDKCell);
+
+                    var detailCell = document.createElement("td");
+                    var detailButton = document.createElement("button");
+                    detailButton.textContent = "Chi tiết";
+                    detailButton.addEventListener("click", function () {
+                        // Lưu maHB vào localStorage 
+                        localStorage.setItem("selectedMaHB", info.maHB);
+                        window.location.href = "detail.html";
+                    });
+                    detailCell.appendChild(detailButton);
+                    row.appendChild(detailCell);
+
+                    infoTableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy thông tin học bổng:", error);
+            });
+
+        axios.get("http://localhost:2209/api/v1/trangchu")
+            .then(response => {
+                const tkData = response.data.tk2;
+
+                tkData.forEach(tk => {
+                    const option = document.createElement("option");
+                    // option.value = tk.id; // You can set the value to a unique identifier
+                    option.textContent = tk.tenHB; // Set the displayed text
+                    tkDropdown.appendChild(option);
+                    console.log(tk)
+                });
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy thông tin tài khoản:", error);
+            });
+    </script>
+
+
+</body>
+
+</html>

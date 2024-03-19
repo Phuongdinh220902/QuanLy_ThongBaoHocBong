@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách ứng tuyển</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+</head>
+
+<body>
+    <h1 class="header_"><b>Danh sách ứng tuyển</b></h1>
+
+    <div class="table-container" id="tab1">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">STT</th>
+                    <th scope="col">ID_SV</th>
+                    <th scope="col">File</th>
+                </tr>
+            </thead>
+            <tbody id="infoTableBody"></tbody>
+        </table>
+    </div>
+
+    <ul id="infoList"></ul>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgb(248, 248, 248);
+            /* background-color: #f0f0f0; */
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script>
+        var selectedMaHB = localStorage.getItem("selectedMaHB");
+
+        const infoTableBody = document.getElementById('infoTableBody');
+        axios.post("http://localhost:2209/api/v1/hsungtuyen", { maHB: selectedMaHB })
+
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const infoTableBody = document.getElementById('infoTableBody');
+            var selectedMaHB = localStorage.getItem("selectedMaHB");
+
+            axios.post("http://localhost:2209/api/v1/hsungtuyen", { maHB: selectedMaHB })
+                .then(response => {
+                    const infoList = response.data.sv;
+
+                    if (!infoList || infoList.length === 0) {
+                        console.error("Không tìm thấy thông tin học bổng");
+                        return;
+                    }
+
+                    // Xóa bỏ các hàng cũ
+                    while (infoTableBody.firstChild) {
+                        infoTableBody.removeChild(infoTableBody.firstChild);
+                    }
+
+                    // Tạo hàng mới từ dữ liệu nhận được
+                    infoList.forEach((info, index) => {
+                        const row = infoTableBody.insertRow(-1);
+
+                        // Thêm cột STT
+                        const indexCell = row.insertCell(0);
+                        indexCell.textContent = index + 1; // STT bắt đầu từ 1
+
+                        const idCell = row.insertCell(1);
+                        idCell.textContent = info.id_sv;
+
+                        // Thêm cột liên kết tải xuống file
+                        const fileCell = row.insertCell(2);
+                        const downloadLink = document.createElement('a');
+                        // Đường dẫn tới file trong cơ sở dữ liệu
+                        let linkfile = "http://localhost:2209/ungtuyen/" + info.ten_file;
+                        downloadLink.href = linkfile;
+                        downloadLink.textContent = 'Xem file';
+                        fileCell.appendChild(downloadLink);
+                    });
+                })
+                .catch(error => {
+                    console.error("Lỗi khi lấy thông tin học bổng:", error);
+                });
+        });
+    </script>
+
+
+    <!-- <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const infoTableBody = document.getElementById('infoTableBody');
+            var selectedMaHB = localStorage.getItem("selectedMaHB");
+
+            axios.post("http://localhost:2209/api/v1/hsungtuyen", { maHB: selectedMaHB })
+                .then(response => {
+                    const info = response.data.info;
+
+                    if (!info) {
+                        console.error("Không tìm thấy thông tin học bổng");
+                        return;
+                    }
+
+                    // Xóa bỏ các hàng cũ
+                    while (infoTableBody.firstChild) {
+                        infoTableBody.removeChild(infoTableBody.firstChild);
+                    }
+
+                    // Tạo hàng mới từ dữ liệu nhận được
+                    const row = infoTableBody.insertRow(-1);
+
+                    // Thêm cột STT
+                    const indexCell = row.insertCell(0);
+                    indexCell.textContent = 1; // Giả sử bạn muốn bắt đầu từ 1
+
+                    const idCell = row.insertCell(1);
+                    idCell.textContent = info.id_sv;
+
+                    // Thêm cột liên kết tải xuống file
+                    const fileCell = row.insertCell(2);
+                    const downloadLink = document.createElement('a');
+                    // Đường dẫn tới file trong cơ sở dữ liệu
+                    let linkfile = "http://localhost:2209/ungtuyen/" + info.ten_file
+                    downloadLink.href = linkfile
+                    downloadLink.textContent = 'Xem file';
+                    fileCell.appendChild(downloadLink);
+                })
+                .catch(error => {
+                    console.error("Lỗi khi lấy thông tin học bổng:", error);
+                });
+        });
+    </script> -->
+
+
+
+</body>
+
+</html>

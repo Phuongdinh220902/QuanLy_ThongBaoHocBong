@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quên Mật Khẩu</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F2FFFE;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #forgetform {
+            max-width: 600px;
+            height: 300px;
+            padding: 70px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 30px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            display: block;
+            padding: 13px;
+            background-color: #0F7771;
+            text-decoration: none;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background-color: #19c79b;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="space"></div>
+    <form id="forgetform">
+        <label for="username">Quên Mật Khẩu</label>
+        <input type="text" id="username" name="username" placeholder="Email" required><br><br>
+
+        <div id="error-container" class="hidden" style="color: red;"></div>
+
+        <button type="button" id="loginButton">Gửi Mật Khẩu Mới</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('loginButton').addEventListener('click', function () {
+            const email = document.getElementById('username').value;
+            axios.post('http://localhost:2209/api/v1/getMaXacNhan', {
+                email: email
+            })
+                .then(function (response) {
+                    if (response.data['check'] == '1') {
+                        alert("Gửi mật khẩu mới thành công")
+                        window.location.href = "loginsv.html";
+                    } else {
+                        alert("Gửi mật khẩu mới thất bại")
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Đã xảy ra lỗi:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>

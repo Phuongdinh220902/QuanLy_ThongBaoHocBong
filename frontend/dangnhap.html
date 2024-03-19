@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Đăng Nhập</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 25px;
+            background-color: #6EC2F7;
+            color: #fff;
+            margin: 0;
+        }
+
+        form {
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 70px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            display: block;
+            width: 50%;
+            padding: 13px;
+            background-color: #6EC2F7;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background-color: #19c79b;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Đăng Nhập</h1>
+    <form id="loginForm">
+        <label for="username">Tên Đăng Nhập:</label>
+        <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập" required><br><br>
+
+        <label for="password">Mật Khẩu:</label>
+        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required><br><br>
+        <div id="error-container" class="hidden" style="color: red;"></div>
+
+        <button type="button" id="loginButton">Đăng Nhập</button>
+    </form>
+    <!-- <div id="error-container" style="color: red;"></div> -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById("loginButton").addEventListener("click", function () {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            var userData = {
+                username: username,
+                password: password
+            };
+
+            axios.post("http://localhost:2209/api/v1/login", userData)
+                .then(response => {
+                    // Xử lý phản hồi từ server nếu cần
+                    console.log("Phản hồi từ server:", response.data);
+                    if (response.data['check'] == "1") {
+                        console.log("TC")
+                        window.location.href = "trangchu.html";
+                    } else {
+                        console.log("TB")
+                        // alert("Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập và thử lại.");
+                        const errorElement = document.createElement('p');
+                        errorElement.textContent = "Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập và thử lại.";
+
+                        const errorContainer = document.getElementById('error-container');
+                        errorContainer.innerHTML = ''; // Xóa nội dung cũ trong container 
+                        errorContainer.appendChild(errorElement);
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi khi đăng nhập:", error);
+                });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Thêm Mới Học Bổng</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+    <!-- Liên kết đến jQuery UI từ CDN -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1>Thêm Mới Học Bổng</h1>
+        <form id="userForm">
+            <div class="form-group">
+                <label for="tenHB">Tên Học Bổng:</label>
+                <input type="text" class="form-control" id="tenHB" name="tenHB" required>
+            </div>
+
+            <div class="form-group">
+                <label for="donVi">Đơn Vị:</label>
+                <input type="text" class="form-control" id="donVi" name="donVi" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dieuKien">Điều Kiện:</label>
+                <textarea class="form-control" id="dieuKien" name="dieuKien" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="soTien">Số Tiền:</label>
+                <input type="text" class="form-control" id="soTien" name="soTien" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cachThamGia">Cách Tham Gia:</label>
+                <textarea type="text" class="form-control" id="cachThamGia" name="cachThamGia" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="hanDK">Hạn Đăng Ký:</label>
+                <input type="text" class="form-control" id="hanDK" name="hanDK" required>
+            </div>
+
+            <div class="form-group">
+                <label for="soLuongDK">Số Lượng Đăng Ký:</label>
+                <input type="number" class="form-control" id="soLuongDK" name="soLuongDK" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tgToChuc">Thời Gian Tổ Chức:</label>
+                <textarea type="text" class="form-control" id="tgToChuc" name="tgToChuc" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" onclick="submitData()">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        function submitData() {
+            var hanDKInput = document.getElementById("hanDK").value;
+            var formattedHanDK = moment(hanDKInput, "DD-MM-YYYY").format("YYYY-MM-DD");
+            const formData = {
+                tenHB: document.getElementById('tenHB').value,
+                donVi: document.getElementById('donVi').value,
+                dieuKien: document.getElementById('dieuKien').value,
+                soTien: parseFloat(document.getElementById('soTien').value),
+                cachThamGia: document.getElementById('cachThamGia').value,
+                hanDK: formattedHanDK,
+                soLuongDK: parseInt(document.getElementById('soLuongDK').value),
+                tgToChuc: document.getElementById('tgToChuc').value,
+            };
+
+            axios.post('http://localhost:2209/api/v1/createNewHB', formData)
+                .then(response => {
+                    console.log('Dữ liệu đã được gửi thành công!', response);
+                    // Xử lý thêm logic ở đây nếu cần
+                    alert("Thêm học bổng thành công!")
+                    window.location.href = "trangchu.html";
+                })
+                .catch(error => {
+                    console.error('Lỗi khi gửi dữ liệu:', error);
+                });
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#hanDK").datepicker({
+                dateFormat: "dd-mm-yy" // Định dạng ngày thành "dd-mm-yyyy"
+            });
+        });
+    </script>
+</body>
+
+</html>

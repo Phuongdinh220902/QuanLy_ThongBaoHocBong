@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chỉnh Sửa Học Bổng</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+    <!-- Liên kết đến jQuery UI từ CDN -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="header_">Chỉnh Sửa Học Bổng</h1>
+        <form id="infoForm">
+            <div style="display: none;" class="form-group">
+                <label for="maHB">Mã Bổng:</label>
+                <input type="text" class="form-control" id="maHB" name="maHB" required>
+            </div>
+            <div class="form-group">
+                <label for="tenHB">Tên Học Bổng:</label>
+                <input type="text" class="form-control" id="tenHB" name="tenHB" required>
+            </div>
+
+            <div class="form-group">
+                <label for="donVi">Đơn Vị:</label>
+                <input type="text" class="form-control" id="donVi" name="donVi" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dieuKien">Điều Kiện:</label>
+                <textarea class="form-control" id="dieuKien" name="dieuKien" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="soTien">Số Tiền:</label>
+                <input type="text" class="form-control" id="soTien" name="soTien" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cachThamGia">Cách Tham Gia:</label>
+                <textarea type="text" class="form-control" id="cachThamGia" name="cachThamGia" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="hanDK">Hạn Đăng Ký:</label>
+                <input type="text" class="form-control" id="hanDK" name="hanDK" required>
+            </div>
+
+            <div class="form-group">
+                <label for="soLuongDK">Số Lượng Đăng Ký:</label>
+                <input type="number" class="form-control" id="soLuongDK" name="soLuongDK" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tgToChuc">Thời Gian Tổ Chức:</label>
+                <textarea type="text" class="form-control" id="tgToChuc" name="tgToChuc" required></textarea>
+            </div>
+            <!-- <button type="submit" class="btn-save">Lưu</button> -->
+            <div class="btn-group2">
+                <button type="submit" class="btn-save">Lưu</button>
+                <button type="button" class="btn-close">Hủy</button>
+            </div>
+
+
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // Lấy maHB từ localStorage
+        var selectedMaHB = localStorage.getItem("selectedMaHB");
+        function formatnumber(number) {
+            format_number = ''
+            let cnt = 0
+            for (let i = number.length - 1; i >= 0; i--) {
+                cnt += 1
+                if (cnt == 4) {
+                    format_number = '.' + format_number
+                    cnt = 1
+                }
+                format_number = number[i] + format_number
+
+            }
+            return format_number
+
+        }
+
+        // Gửi yêu cầu lấy thông tin chi tiết về học bổng dựa trên maHB
+        axios.post("http://localhost:2209/api/v1/tthb", { maHB: selectedMaHB })
+            .then(response => {
+                var info = response.data.info;
+                var formattedHanDK = moment(info.hanDK).format("DD-MM-YYYY");
+
+                // Đổ dữ liệu
+                document.getElementById("maHB").value = info.maHB;
+                document.getElementById("tenHB").value = info.tenHB;
+                document.getElementById("donVi").value = info.donVi;
+                document.getElementById("dieuKien").value = info.dieuKien;
+                document.getElementById("soTien").value = formatnumber(info.soTien);
+                document.getElementById("cachThamGia").value = info.cachThamGia;
+                document.getElementById("hanDK").value = formattedHanDK;
+                document.getElementById("soLuongDK").value = info.soLuongDK;
+                document.getElementById("tgToChuc").value = info.tgToChuc;
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy thông tin chi tiết học bổng:", error);
+            });
+
+        // Xử lý sự kiện nút Lưu
+        document.getElementById("infoForm").addEventListener("submit", function (event) {
+
+            event.preventDefault();
+            var confirmation = confirm("Bạn có muốn lưu thông tin đã chỉnh sửa không?");
+            if (confirmation) {
+                var hanDKInput = document.getElementById("hanDK").value;
+                var formattedHanDK = moment(hanDKInput, "DD-MM-YYYY").format("YYYY-MM-DD");
+                var st = document.getElementById("soTien").value.replace('.', '')
+                var updatedInfo = {
+                    maHB: document.getElementById("maHB").value,
+                    tenHB: document.getElementById("tenHB").value,
+                    donVi: document.getElementById("donVi").value,
+                    dieuKien: document.getElementById("dieuKien").value,
+                    soTien: st,
+                    cachThamGia: document.getElementById("cachThamGia").value,
+                    hanDK: formattedHanDK,
+                    soLuongDK: document.getElementById("soLuongDK").value,
+                    tgToChuc: document.getElementById("tgToChuc").value
+                };
+
+                // Gửi yêu cầu cập nhật thông tin học bổng
+                axios.post("http://localhost:2209/api/v1/updateHB", updatedInfo)
+                    .then(response => {
+                        // Xử lý khi cập nhật thành công (có thể thông báo hoặc chuyển hướng trang)
+                        console.log("Thông tin học bổng đã được cập nhật:", response.data);
+                        if (response.data["message"] === "ok") {
+                            window.location.href = "detail.html";
+                        } else {
+                            alert("Cap nhat tb")
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Lỗi khi cập nhật thông tin học bổng:", error);
+                    });
+            } else {
+                // window.location.href = "tthb.html";
+                console.log("hshs")
+            }
+
+        });
+        // Sử dụng JavaScript để thêm sự kiện cho nút "Hủy"
+        document.querySelector(".btn-close").addEventListener("click", function () {
+            window.location.href = "detail.html";
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#hanDK").datepicker({
+                dateFormat: "dd-mm-yy" // Định dạng ngày thành "dd-mm-yyyy"
+            });
+        });
+    </script>
+</body>
+
+</html>

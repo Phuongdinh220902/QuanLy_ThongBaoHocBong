@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chi tiết học bổng</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <div class="container">
+        <h1 class="header_">Chi Tiết Học Bổng</h1>
+        <div class="card">
+            <div class="card-body">
+                <div id="infoDetail">
+                    <script>
+                        // Lấy maHB từ localStorage
+                        var selectedMaHB = localStorage.getItem("selectedMaHB");
+
+                        function formatnumber(number) {
+                            format_number = ''
+                            let cnt = 0
+                            for (let i = number.length - 1; i >= 0; i--) {
+                                cnt += 1
+                                if (cnt == 4) {
+                                    format_number = '.' + format_number
+                                    cnt = 1
+                                }
+                                format_number = number[i] + format_number
+
+                            }
+                            return format_number
+
+                        }
+
+                        axios.post("http://localhost:2209/api/v1/tthb", { maHB: selectedMaHB })
+                            .then(response => {
+                                var info = response.data.info;
+                                var infoDetail = document.getElementById("infoDetail");
+
+                                var formattedHanDK = moment(info.hanDK).format("DD-MM-YYYY");
+
+                                var DieuKien = info.dieuKien
+                                DieuKien = DieuKien.replace(/\n/g, '<br>');
+                                var Cachthamgia = info.cachThamGia
+                                Cachthamgia = Cachthamgia.replace(/\n/g, '<br>');
+                                var TGtochuc = info.tgToChuc
+                                TGtochuc = TGtochuc.replace(/\n/g, '<br>');
+
+                                var infoDiv = document.createElement("div");
+
+                                infoDiv.innerHTML = `
+
+                                    <p><strong>Tên học bổng:</strong> ${info.tenHB}</p>
+                                    <p><strong>Đơn vị:</strong> ${info.donVi}</p>
+                                    <p><strong>Điều kiện:</strong></br>${DieuKien}</p>
+                                    <p><strong>Số tiền:</strong> ${formatnumber(info.soTien)}</p>
+                                    <p><strong>Cách tham gia:</strong></br>${Cachthamgia}</p>
+                                    <p><strong>Hạn đăng ký:</strong> ${formattedHanDK}</p>
+                                    <p><strong>Số lượng:</strong> ${info.soLuongDK}</p>
+                                    <p><strong>Thời gian tổ chức:</strong> </br>${TGtochuc}</p>
+                                `;
+                                infoDetail.appendChild(infoDiv);
+                            })
+
+
+                            .catch(error => {
+                                console.error("Lỗi khi lấy thông tin chi tiết học bổng:", error);
+                            });
+                    </script>
+                </div>
+
+                <div class="btn-group-button">
+                    <button type="button" class="btn btn-primary" id="update-hb">Chỉnh Sửa</button>
+                    <button type="button" class="btn btn-danger" id="delete-hb">Xóa</button>
+                    <button type="button" class="btn-huy">Hủy</button>
+
+                </div>
+                <div class="btn-hoso-container">
+                    <button type="button" class="btn-hoso" id="hoso">Hồ sơ ứng tuyển</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const updateHbButton = document.getElementById('update-hb');
+        const HosoButton = document.getElementById('hoso');
+
+        updateHbButton.addEventListener('click', function () {
+            window.location.href = "update.html";
+        });
+
+        HosoButton.addEventListener('click', function () {
+            window.location.href = "hosoungtuyen.html";
+        });
+
+        document.querySelector(".btn-huy").addEventListener("click", function () {
+            window.location.href = "trangchu.html";
+        });
+
+
+
+        const deleteButton = document.getElementById('delete-hb');
+
+        deleteButton.addEventListener('click', function () {
+            const confirmation = confirm('Bạn có chắc chắn muốn xóa?');
+
+            if (confirmation) {
+                // Người dùng đã chọn "Có", thực hiện xóa
+                const maHBToDelete = selectedMaHB; // Lấy mã học bổng từ localStorage
+
+                axios.post('http://localhost:2209/api/v1/deleteHB', { maHB: maHBToDelete })
+                    .then(response => {
+                        const data = response.data;
+                        if (data.message === 'ok') {
+                            alert('Xóa thành công.');
+                            window.location.href = "trangchu.html";
+                        } else {
+                            alert('Xóa không thành công.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi gửi yêu cầu xóa:', error);
+                    });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

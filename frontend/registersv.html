@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký tài khoản</title>
+    <!-- Link tới Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Tùy chỉnh CSS -->
+    <style>
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Đăng ký tài khoản</h2>
+        <form>
+            <div class="form-group">
+                <label for="ten">Tên:</label>
+                <input type="text" class="form-control" id="ten" placeholder="Nhập tên">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" placeholder="Nhập email">
+            </div>
+            <div class="form-group">
+                <label for="matkhau">Mật khẩu:</label>
+                <input type="password" class="form-control" id="matkhau" placeholder="Nhập mật khẩu">
+            </div>
+            <div class="form-group">
+                <label for="nganhhoc">Ngành học:</label>
+                <select class="form-control" id="nganhhoc">
+                    <option value="khtn">Khoa học tự nhiên</option>
+                    <option value="khtn">Khoa học xã hội</option>
+                    <option value="khtn">Kỹ thuật và công nghệ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="masosinhvien">Mã số sinh viên:</label>
+                <input type="text" class="form-control" id="masosinhvien" placeholder="Nhập mã số sinh viên">
+            </div>
+            <button type="submit" class="btn btn-primary">Đăng ký</button>
+        </form>
+    </div>
+
+    <!-- Link tới Bootstrap JS và jQuery (đặt ở cuối trang) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
